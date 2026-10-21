@@ -1,0 +1,33 @@
+# Abhängigkeiten
+node_modules/
+
+# Build-Ausgaben
+dist/
+dist-ssr/
+
+# Lokale Daten (SQLite, WAL-Dateien)
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+
+# Umgebungsvariablen
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editoren und System
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.sw?
+.eslintcache
+*.tsbuildinfo

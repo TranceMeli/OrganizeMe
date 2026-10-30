@@ -1,0 +1,276 @@
+/* Das Heft: Einband, Seiten, Bindung, Reiter. Die Module selbst bleiben unverändert
+   und werden hier über Variablen und gezielte Überschreibungen in die Seiten eingepasst. */
+
+.book {
+  /* Akzentfarbe folgt dem aktiven Werkzeug */
+  --tool: var(--tool-notebook);
+  --blue: var(--tool);
+  --blue-dark: color-mix(in srgb, var(--tool) 78%, #000);
+  position: relative;
+  display: flex;
+  margin: 0 auto;
+  padding: 18px 26px 18px 18px;
+  background: var(--cover);
+  border: 1px solid var(--cover-edge);
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.22);
+}
+
+.book[data-tool='drawing'] { --tool: var(--tool-drawing); }
+.book[data-tool='todo']    { --tool: var(--tool-todo); }
+.book[data-tool='code']    { --tool: var(--tool-code); }
+
+/* Naht */
+.book::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1.5px dashed var(--stitch);
+  border-radius: 10px;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.spread {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+  background: var(--gray-bg);
+  border: 1px solid var(--cover-edge);
+  border-radius: 6px;
+}
+
+/* Bindung */
+.spread::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  margin-left: -7px;
+  background: var(--spine);
+  border-left: 1px solid var(--gray-border);
+  border-right: 1px solid var(--gray-border);
+  pointer-events: none;
+}
+
+/* Seitenstapel am rechten Rand */
+.edge {
+  position: absolute;
+  right: 19px;
+  top: 24px;
+  bottom: 24px;
+  width: 7px;
+  background: repeating-linear-gradient(90deg, var(--gray-border) 0 1px, var(--gray-card) 1px 2px);
+  border: 1px solid var(--cover-edge);
+  border-left: 0;
+  border-radius: 0 3px 3px 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ribbon {
+  position: absolute;
+  left: calc(50% + 4px);
+  margin-left: -6px;
+  top: 18px;
+  width: 12px;
+  height: 58px;
+  background: var(--ribbon);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Seiten */
+.pg {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 18px 28px 20px;
+  overflow: hidden;
+}
+
+.pg.right { background: var(--gray-card); }
+
+.pg-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.pg-head h2 {
+  font-family: var(--font-hand);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.pg-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pg-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-body > * {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+
+.pg-loading { color: var(--muted); font-size: 14px; }
+
+/* Reiter am Seitenrand: inaktiv nur das Symbol, aktiv mit Namen */
+.tabs {
+  position: absolute;
+  left: calc(100% - 28px);
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.tab {
+  position: absolute;
+  left: 0;
+  height: 40px;
+  width: 56px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px 0 18px;
+  background: var(--tab);
+  color: var(--on-accent);
+  border: 1px solid rgb(0 0 0 / 0.28);
+  border-radius: 2px 10px 10px 2px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.tab::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  background: rgb(0 0 0 / 0.2);
+}
+
+.tab svg { flex-shrink: 0; }
+.tab-label { display: none; }
+.tab.active,
+.tab:hover { width: auto; min-width: 56px; }
+.tab.active .tab-label,
+.tab:hover .tab-label { display: inline; }
+.tab:focus-visible { outline: 2px solid var(--stitch); outline-offset: 2px; }
+
+.grip {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--stitch);
+  cursor: nwse-resize;
+  touch-action: none;
+  z-index: 4;
+}
+
+/* ── Module in den Seiten ───────────────────────────────── */
+
+/* Karten ohne eigenen Rahmen: die Seite ist die Karte */
+.book .pg-body .card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  gap: 12px;
+}
+
+.book .pg-body .card.code-card {
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+
+.book .pg-body .toolbar { padding: 6px 0 10px; }
+.book .pg-body .title-input { margin: 8px 0; }
+
+/* Eintragstext in Handschrift auf Linien */
+.book .pg-body .editor,
+.book .pg-body .markdown-editor { margin: 0; }
+
+.book .pg-body .editor {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  background-image: repeating-linear-gradient(
+    transparent 0 23px, var(--gray-border) 23px 24px
+  );
+  background-size: auto;
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.book .pg-body .editor .tiptap {
+  color: var(--text);
+  min-height: 100%;
+}
+
+.book .pg-body .editor .tiptap ul,
+.book .pg-body .editor .tiptap ol { padding-left: 24px; }
+
+.book .pg-body .markdown-editor {
+  border-radius: 8px;
+  background: var(--white);
+}
+
+/* Zeichenfläche bleibt hell, damit Striche in beiden Modi sichtbar sind */
+.book .pg-body .canvas-wrapper {
+  margin: 0;
+  background: #fffdf6;
+  border-radius: 8px;
+}
+
+.book .pg-body .datum-row { padding: 6px 0 10px; }
+.book .pg-body .code-card .datum-row { padding: 10px 14px; }
+.book .pg-body .content { padding: 12px 0; }
+.book .pg-body .code-card .code-preview { border-radius: 0 0 10px 10px; }
+.book .pg-body .preview-body { padding: 8px 0; }
+
+/* Eingabefelder erben die Schrift nicht von selbst */
+.book input,
+.book select,
+.book textarea,
+.book button { font-family: var(--font); }
+
+/* Rich-Text-Vorschau in Handschrift wie der Editor, Markdown bleibt in der Fließtextschrift */
+.book .pg-body .content:not(.markdown) {
+  font-family: var(--font-hand);
+  font-size: 20px;
+  line-height: 1.3;
+}

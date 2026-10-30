@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useEntryStore } from '../stores/entryStore'
+import PageActions from '../../../components/PageActions.vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -96,14 +97,11 @@ function switchMode(mode) {
 <template>
   <div class="editor-wrapper">
 
-    <div class="topbar">
-      <button class="btn-neu" @click="store.createEntry">New</button>
-      <button
-        class="btn-trash"
-        @click="store.deleteEntry(store.activeId)"
-        :disabled="!store.activeEntry"
-      >🗑</button>
-    </div>
+    <PageActions
+      :disabled="!store.activeEntry"
+      @create="store.createEntry"
+      @delete="store.deleteEntry(store.activeId)"
+    />
 
     <div class="card">
 
@@ -187,41 +185,6 @@ function switchMode(mode) {
   flex-direction: column;
   height: 100%;
 }
-
-.topbar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 34px;
-  padding: 0 2px;
-}
-
-.btn-neu {
-  height: 34px;
-  padding: 0 28px;
-  background: var(--blue);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-tab) var(--radius-tab) 0 0;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-neu:hover { background: var(--blue-dark); }
-
-.btn-trash {
-  height: 34px;
-  padding: 0 12px;
-  background: var(--blue);
-  border: none;
-  border-radius: var(--radius-tab) 0 0 0;
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--on-accent);
-}
-
-.btn-trash:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .card {
   flex: 1;

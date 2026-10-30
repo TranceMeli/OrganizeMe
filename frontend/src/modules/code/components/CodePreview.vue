@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useCodeStore } from '../stores/codeStore'
-import TabBar from '../../../components/TabBar.vue'
+import ItemList from '../../../components/ItemList.vue'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/vs2015.css' // dunkles Theme passend zu Monaco
 
@@ -34,13 +34,13 @@ const highlightedCode = computed(() => {
 <template>
   <div class="preview-wrapper">
 
-    <TabBar
+    <ItemList
       :items="store.snippets"
       :active-id="store.activeId"
       @select="store.setActive"
     />
 
-    <div class="card">
+    <div class="card code-card">
 
       <div class="datum-row">
         <span class="lang-badge">

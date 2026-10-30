@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { debounceById } from '@/utils/debounce'
+import { confirmDialog } from '@/composables/useDialog'
 import {
   getSnippets,
   createSnippet as apiCreate,
@@ -40,7 +41,11 @@ export const useCodeStore = defineStore('code', {
 
     async deleteSnippet(id = this.activeId) {
       if (!id) return
-      const ok = window.confirm('Delete this snippet?')
+      const item = this.snippets.find(s => s.id === id)
+      const ok = await confirmDialog({
+        title: 'Delete snippet?',
+        message: `“${item?.title || 'Untitled'}” will be deleted permanently.`
+      })
       if (!ok) return
       await apiDelete(id)
       this.snippets = this.snippets.filter(s => s.id !== id)

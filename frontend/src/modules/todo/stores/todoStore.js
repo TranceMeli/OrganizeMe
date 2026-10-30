@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { confirmDialog } from '@/composables/useDialog'
 import {
   getTodos,
   createTodo as apiCreate,
@@ -45,7 +46,11 @@ export const useTodoStore = defineStore('todo', {
     },
 
     async deleteTodo(id) {
-      const ok = window.confirm('Delete this todo?')
+      const item = this.todos.find(t => t.id === id)
+      const ok = await confirmDialog({
+        title: 'Delete todo?',
+        message: `“${item?.title || 'Untitled'}” will be deleted permanently.`
+      })
       if (!ok) return
       await apiDelete(id)
       this.todos = this.todos.filter(t => t.id !== id)

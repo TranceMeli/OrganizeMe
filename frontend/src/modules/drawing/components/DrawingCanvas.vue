@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useDrawingStore } from '../stores/drawingStore'
+import PageActions from '../../../components/PageActions.vue'
+import { confirmDialog } from '@/composables/useDialog'
 
 const store = useDrawingStore()
 
@@ -85,8 +87,12 @@ function stopDrawing() {
   store.saveData(data)
 }
 
-function clearCanvas() {
-  const ok = window.confirm('Clear the canvas?')
+async function clearCanvas() {
+  const ok = await confirmDialog({
+    title: 'Clear the canvas?',
+    message: 'The drawing will be emptied. This cannot be undone.',
+    confirmLabel: 'Clear'
+  })
   if (!ok) return
   ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
   store.saveData('')
@@ -96,14 +102,11 @@ function clearCanvas() {
 <template>
   <div class="editor-wrapper">
 
-    <div class="topbar">
-      <button class="btn-neu" @click="store.createDrawing">New</button>
-      <button
-        class="btn-trash"
-        @click="store.deleteDrawing()"
-        :disabled="!store.activeDrawing"
-      >🗑</button>
-    </div>
+    <PageActions
+      :disabled="!store.activeDrawing"
+      @create="store.createDrawing"
+      @delete="store.deleteDrawing()"
+    />
 
     <div class="card">
       <div class="toolbar">
@@ -149,41 +152,6 @@ function clearCanvas() {
   flex-direction: column;
   height: 100%;
 }
-
-.topbar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 34px;
-  padding: 0 2px;
-}
-
-.btn-neu {
-  height: 34px;
-  padding: 0 28px;
-  background: var(--blue);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-tab) var(--radius-tab) 0 0;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-neu:hover { background: var(--blue-dark); }
-
-.btn-trash {
-  height: 34px;
-  padding: 0 12px;
-  background: var(--blue);
-  border: none;
-  border-radius: var(--radius-tab) var(--radius-tab) 0 0;
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--on-accent);
-}
-
-.btn-trash:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .card {
   flex: 1;

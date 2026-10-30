@@ -1,6 +1,6 @@
 <script setup>
 import { useDrawingStore } from '../stores/drawingStore'
-import TabBar from '../../../components/TabBar.vue'
+import ItemList from '../../../components/ItemList.vue'
 
 const store = useDrawingStore()
 
@@ -18,7 +18,7 @@ function formatDate(dateStr) {
 <template>
   <div class="preview-wrapper">
 
-    <TabBar
+    <ItemList
       :items="store.drawings"
       :active-id="store.activeId"
       @select="store.setActive"

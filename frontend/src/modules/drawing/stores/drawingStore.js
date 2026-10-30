@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { debounceById } from '@/utils/debounce'
+import { confirmDialog } from '@/composables/useDialog'
 import {
   getDrawings,
   createDrawing,
@@ -40,7 +41,11 @@ export const useDrawingStore = defineStore('drawing', {
 
     async deleteDrawing(id = this.activeId) {
       if (!id) return
-      const ok = window.confirm('Delete this drawing?')
+      const item = this.drawings.find(d => d.id === id)
+      const ok = await confirmDialog({
+        title: 'Delete drawing?',
+        message: `“${item?.title || 'Untitled'}” will be deleted permanently.`
+      })
       if (!ok) return
 
       await deleteDrawing(id)

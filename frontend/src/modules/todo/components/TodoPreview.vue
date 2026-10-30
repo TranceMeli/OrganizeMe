@@ -14,8 +14,6 @@ const percent = computed(() =>
 <template>
   <div class="preview-wrapper">
 
-    <div class="topbar-spacer"></div>
-
     <div class="card">
 
       <!-- Fortschritt -->
@@ -71,10 +69,6 @@ const percent = computed(() =>
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-
-.topbar-spacer {
-  height: 34px;
 }
 
 .card {

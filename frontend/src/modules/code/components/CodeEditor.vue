@@ -1,17 +1,14 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useCodeStore } from '../stores/codeStore'
+import PageActions from '../../../components/PageActions.vue'
 import * as monaco from 'monaco-editor'
+import { languages } from '../languages'
 
 const store = useCodeStore()
 const containerRef = ref(null)
 let editorInstance = null
 let syncing = false // verhindert Speichern beim Wechsel des Snippets
-
-const languages = [
-  'javascript', 'typescript', 'python', 'csharp',
-  'java', 'html', 'css', 'json', 'sql', 'shell'
-]
 
 onMounted(() => {
   editorInstance = monaco.editor.create(containerRef.value, {
@@ -45,24 +42,21 @@ watch(() => store.activeId, () => {
   syncing = false
 })
 
-function onLanguageChange(lang) {
-  store.updateLanguage(lang)
-  if (!editorInstance) return
+// Sprache folgt dem Store, egal ob per Auswahl oder per Bearbeiten-Dialog geändert
+watch(() => store.activeSnippet?.language, (lang) => {
+  if (!editorInstance || !lang) return
   monaco.editor.setModelLanguage(editorInstance.getModel(), lang)
-}
+})
 </script>
 
 <template>
   <div class="editor-wrapper">
 
-    <div class="topbar">
-      <button class="btn-neu" @click="store.createSnippet">New</button>
-      <button
-        class="btn-trash"
-        @click="store.deleteSnippet()"
-        :disabled="!store.activeSnippet"
-      >🗑</button>
-    </div>
+    <PageActions
+      :disabled="!store.activeSnippet"
+      @create="store.createSnippet"
+      @delete="store.deleteSnippet()"
+    />
 
     <div class="card">
 
@@ -77,7 +71,7 @@ function onLanguageChange(lang) {
         <select
           class="lang-select"
           :value="store.activeSnippet?.language"
-          @change="onLanguageChange($event.target.value)"
+          @change="store.updateLanguage($event.target.value)"
         >
           <option v-for="lang in languages" :key="lang" :value="lang">
             {{ lang }}
@@ -97,41 +91,6 @@ function onLanguageChange(lang) {
   flex-direction: column;
   height: 100%;
 }
-
-.topbar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  height: 34px;
-  padding: 0 2px;
-}
-
-.btn-neu {
-  height: 34px;
-  padding: 0 28px;
-  background: var(--blue);
-  color: var(--on-accent);
-  border: none;
-  border-radius: var(--radius-tab) var(--radius-tab) 0 0;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-neu:hover { background: var(--blue-dark); }
-
-.btn-trash {
-  height: 34px;
-  padding: 0 12px;
-  background: var(--blue);
-  border: none;
-  border-radius: var(--radius-tab) 0 0 0;
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--on-accent);
-}
-
-.btn-trash:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .card {
   flex: 1;

@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useEntryStore } from '../stores/entryStore'
-import TabBar from '../../../components/TabBar.vue'
+import ItemList from '../../../components/ItemList.vue'
 import { marked } from 'marked'
 
 const store = useEntryStore()
@@ -29,7 +29,7 @@ const renderedContent = computed(() => {
 <template>
   <div class="preview-wrapper">
 
-    <TabBar
+    <ItemList
       :items="store.entries"
       :active-id="store.activeId"
       @select="store.setActive"

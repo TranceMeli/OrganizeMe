@@ -16,7 +16,7 @@ A personal organizer as a local web app with four modules:
 | **Todos** | Open and completed tasks with a progress indicator |
 | **Code** | Snippets with the Monaco editor and syntax highlighting (highlight.js) |
 
-It also includes a light/dark mode (petrol color scheme) and a draggable divider between the editor and the preview.
+The app looks like a leather-bound diary: an open book with two pages, a ribbon bookmark, and one index tab per tool on the page edge. Drag the corner at the bottom right to resize the book (double-click it to fit the window). Colors follow the active tool, and there is a day/night mode. Headings and entries use the handwriting font Caveat, the rest uses Nunito. The book size, active tool, and mode are remembered in the browser. Deleting items asks for confirmation in an in-app dialog instead of a browser alert.
 
 ## Screenshots
 
@@ -42,7 +42,8 @@ Organizer/
     └── src/
         ├── App.vue
         ├── config.js          Backend API address
-        ├── components/        Shared components (TabBar)
+        ├── components/        Shared components (ItemList)
+        ├── styles/            book.css – cover, pages, tabs, module overrides
         ├── utils/             Shared helpers (debounce)
         └── modules/
             ├── entries/       Notebook – each module: components, services, stores
@@ -120,9 +121,9 @@ Every resource supports `GET /<name>`, `POST /<name>`, `PUT /<name>/:id`, and `D
 
 By default, data is stored in `backend/entries.db` (SQLite, WAL mode), which `.gitignore` excludes from Git. The file is created on first start. To back it up, copy it together with `entries.db-wal` and `entries.db-shm` while the backend is stopped.
 
-## Customizing colors
+## Customizing the look
 
-All colors are CSS variables in `frontend/src/App.vue` (`:root` for light, `.dark` for dark). `--on-accent` is the text color on accent-colored surfaces.
+Colors are CSS variables at the top of the style block in `frontend/src/App.vue` (`.layout` for day, `.layout.dark` for night): paper, leather cover, stitching, ribbon, and one color per tool (`--tool-notebook`, `--tool-drawing`, `--tool-todo`, `--tool-code`). `--on-accent` is the text color on accent-colored surfaces. The book itself is styled in `frontend/src/styles/book.css`. Fonts come from `@fontsource/caveat` and `@fontsource/nunito` and are imported in `frontend/src/main.js`, so they work offline.
 
 ## Notes
 

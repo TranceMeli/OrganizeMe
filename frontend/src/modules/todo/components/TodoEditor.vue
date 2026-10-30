@@ -15,10 +15,6 @@ async function addTodo() {
 <template>
   <div class="editor-wrapper">
 
-    <div class="topbar">
-      <span class="topbar-title">Todos</span>
-    </div>
-
     <div class="card">
 
       <!-- Neues Todo -->
@@ -52,7 +48,12 @@ async function addTodo() {
               :value="todo.title"
               @change="store.updateTitle(todo.id, $event.target.value)"
             />
-            <button class="del-btn" @click="store.deleteTodo(todo.id)">🗑</button>
+            <button class="del-btn" title="Delete" aria-label="Delete" @click="store.deleteTodo(todo.id)">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3" />
+              </svg>
+            </button>
           </div>
           <div v-if="!store.openTodos.length" class="empty">
             No open todos
@@ -80,7 +81,12 @@ async function addTodo() {
               :value="todo.title"
               @change="store.updateTitle(todo.id, $event.target.value)"
             />
-            <button class="del-btn" @click="store.deleteTodo(todo.id)">🗑</button>
+            <button class="del-btn" title="Delete" aria-label="Delete" @click="store.deleteTodo(todo.id)">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M9 7V4h6v3" />
+              </svg>
+            </button>
           </div>
           <div v-if="!store.doneTodos.length" class="empty">
             Nothing done yet
@@ -97,19 +103,6 @@ async function addTodo() {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  padding: 0 2px;
-  height: 34px;
-}
-
-.topbar-title {
-  font-size: 14px;
-  font-weight: bold;
-  color: var(--muted);
 }
 
 .card {
@@ -213,14 +206,18 @@ async function addTodo() {
 }
 
 .del-btn {
+  display: flex;
   background: transparent;
   border: none;
-  font-size: 14px;
   cursor: pointer;
   color: var(--muted);
-  padding: 2px 4px;
+  padding: 4px;
+  border-radius: 6px;
   opacity: 0;
 }
+
+.del-btn:hover { color: var(--text); background: var(--gray-card); }
+.del-btn:focus-visible { opacity: 1; outline: 2px solid var(--blue); }
 
 .todo-item:hover .del-btn {
   opacity: 1;

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { debounceById } from '@/utils/debounce'
+import { confirmDialog } from '@/composables/useDialog'
 import {
   getEntries,
   createEntry as apiCreate,
@@ -40,7 +41,11 @@ export const useEntryStore = defineStore('entry', {
 
     async deleteEntry(id = this.activeId) {
       if (!id) return
-      const ok = window.confirm('Delete this entry?')
+      const item = this.entries.find(e => e.id === id)
+      const ok = await confirmDialog({
+        title: 'Delete entry?',
+        message: `“${item?.title || 'Untitled'}” will be deleted permanently.`
+      })
       if (!ok) return
       await apiDelete(id)
       this.entries = this.entries.filter(e => e.id !== id)

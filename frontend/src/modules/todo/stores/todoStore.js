@@ -34,6 +34,7 @@ export const useTodoStore = defineStore('todo', {
     async toggleDone(id) {
       const todo = this.todos.find(t => t.id === id)
       if (!todo) return
+      // The checkbox flips immediately. If the request fails, the save indicator offers a retry.
       todo.done = !todo.done
       await apiUpdate(todo)
     },

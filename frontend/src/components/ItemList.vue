@@ -1,4 +1,5 @@
 <script setup>
+// Compact list of a tool's items on the right page. Emits the id of the clicked item.
 defineProps({
   items:    Array,
   activeId: String
@@ -46,13 +47,14 @@ function shortDate(dateStr) {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 7px 10px;
+  min-height: var(--control-h);
+  padding: 4px 12px;
   border: 1px solid var(--gray-border);
   border-radius: 8px;
   background: var(--white);
   color: var(--text);
   font-family: var(--font);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   text-align: left;
   cursor: pointer;
 }
@@ -68,12 +70,12 @@ function shortDate(dateStr) {
 
 .item-date {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: var(--fs-cap);
   color: var(--muted);
 }
 
 .item-empty {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--muted);
   padding: 4px 2px;
 }

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
-// Gemeinsamer Zustand für den Bestätigungsdialog (ein Dialog gleichzeitig).
-// DialogHost.vue zeigt ihn an, confirmDialog liefert ein Promise.
+// State of the confirmation dialog, one at a time. DialogHost.vue renders it and
+// confirmDialog() resolves with the answer, so callers can simply await it.
 export const dialog = reactive({
   open: false,
   title: '',
@@ -18,9 +18,9 @@ export function closeDialog(result) {
   resolve?.(result)
 }
 
-/** Bestätigungsdialog. Liefert true oder false. */
+/** Asks for confirmation. Resolves with true or false. */
 export function confirmDialog({ title, message = '', confirmLabel = 'Delete', danger = true }) {
-  // Ein noch offener Dialog gilt als abgebrochen
+  // A dialog that is still open counts as cancelled
   if (dialog.open) closeDialog(false)
 
   return new Promise((resolve) => {

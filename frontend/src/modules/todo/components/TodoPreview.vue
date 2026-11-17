@@ -16,7 +16,6 @@ const percent = computed(() =>
 
     <div class="card">
 
-      <!-- Fortschritt -->
       <div class="progress-section">
         <div class="progress-label">
           {{ done }} of {{ total }} done
@@ -27,7 +26,6 @@ const percent = computed(() =>
         <div class="progress-percent">{{ percent }}%</div>
       </div>
 
-      <!-- Offene Todos -->
       <div class="section">
         <div class="section-label">Open ({{ store.openTodos.length }})</div>
         <div
@@ -43,7 +41,6 @@ const percent = computed(() =>
         </div>
       </div>
 
-      <!-- Erledigte Todos -->
       <div class="section">
         <div class="section-label">Done ({{ store.doneTodos.length }})</div>
         <div
@@ -90,7 +87,7 @@ const percent = computed(() =>
 }
 
 .progress-label {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--muted);
 }
 
@@ -109,7 +106,7 @@ const percent = computed(() =>
 }
 
 .progress-percent {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: bold;
   color: var(--blue);
 }
@@ -121,7 +118,7 @@ const percent = computed(() =>
 }
 
 .section-label {
-  font-size: 11px;
+  font-size: var(--fs-cap);
   font-weight: bold;
   color: var(--muted);
   text-transform: uppercase;
@@ -132,7 +129,7 @@ const percent = computed(() =>
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--text);
   padding: 6px 10px;
   background: var(--white);
@@ -156,7 +153,7 @@ const percent = computed(() =>
 .dot.done-dot { background: var(--muted); }
 
 .empty {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--muted);
   padding: 6px 10px;
 }

@@ -2,20 +2,11 @@
 import { computed } from 'vue'
 import { useCodeStore } from '../stores/codeStore'
 import ItemList from '../../../components/ItemList.vue'
+import { formatLongDate } from '@/utils/date'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/vs2015.css' // dunkles Theme passend zu Monaco
+import 'highlight.js/styles/vs2015.css' // dark theme that matches the Monaco editor
 
 const store = useCodeStore()
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
 
 const highlightedCode = computed(() => {
   const snippet = store.activeSnippet
@@ -26,6 +17,7 @@ const highlightedCode = computed(() => {
       language: snippet.language || 'javascript'
     }).value
   } catch {
+    // highlight() throws for language names it does not know, so guess the language instead
     return hljs.highlightAuto(snippet.code).value
   }
 })
@@ -47,7 +39,7 @@ const highlightedCode = computed(() => {
           {{ store.activeSnippet?.language || '' }}
         </span>
         <div class="datum">
-          {{ formatDate(store.activeSnippet?.created_at) }}
+          {{ formatLongDate(store.activeSnippet?.created_at) }}
         </div>
       </div>
 
@@ -68,7 +60,7 @@ const highlightedCode = computed(() => {
 
 .card {
   flex: 1;
-  background: #1e1e1e; /* ← passend zu vs-dark */
+  background: #1e1e1e; /* same as the vs-dark editor background */
   border: 1px solid var(--gray-border);
   border-radius: 0 var(--radius-card) var(--radius-card) var(--radius-card);
   display: flex;
@@ -89,7 +81,7 @@ const highlightedCode = computed(() => {
   background: var(--blue);
   color: var(--on-accent);
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: var(--fs-cap);
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -98,7 +90,7 @@ const highlightedCode = computed(() => {
   padding: 5px 14px;
   border: 1px solid #444;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   background: #2a2a2a;
   color: #ccc;
 }
@@ -109,12 +101,12 @@ const highlightedCode = computed(() => {
   overflow: auto;
   margin: 0;
   background: #1e1e1e;
-  color: #dcdcdc; /* Standardfarbe des vs2015-Themes, z. B. für Satzzeichen */
+  color: #dcdcdc; /* hljs does not wrap punctuation, so it inherits this default of the vs2015 theme */
 }
 
 .code-preview code {
   font-family: 'Courier New', monospace;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   line-height: 1.6;
   background: transparent;
 }
@@ -124,7 +116,7 @@ const highlightedCode = computed(() => {
   align-items: center;
   justify-content: center;
   flex: 1;
-  color: #666;
-  font-size: 14px;
+  color: #A8A8A8;
+  font-size: var(--fs-sm);
 }
 </style>

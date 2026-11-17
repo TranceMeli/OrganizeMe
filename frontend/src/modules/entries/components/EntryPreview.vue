@@ -2,24 +2,17 @@
 import { computed } from 'vue'
 import { useEntryStore } from '../stores/entryStore'
 import ItemList from '../../../components/ItemList.vue'
+import { formatLongDate } from '@/utils/date'
 import { marked } from 'marked'
 
 const store = useEntryStore()
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
 
 const renderedContent = computed(() => {
   const entry = store.activeEntry
   if (!entry) return ''
   if (entry.mode === 'markdown') {
+    // Not sanitised: the content is the user's own and only ever shown to the user on a local app.
+    // Add a sanitiser such as DOMPurify before exposing the app to other people.
     return marked(entry.content || '')
   }
   return entry.content || '<p>No content yet...</p>'
@@ -41,7 +34,7 @@ const renderedContent = computed(() => {
           {{ store.activeEntry?.mode === 'markdown' ? 'MD' : 'RT' }}
         </span>
         <div class="datum">
-          {{ formatDate(store.activeEntry?.created_at) }}
+          {{ formatLongDate(store.activeEntry?.created_at) }}
         </div>
       </div>
 
@@ -84,13 +77,13 @@ const renderedContent = computed(() => {
 .mode-badge {
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  font-size: 11px;
+  font-size: var(--fs-cap);
   font-weight: bold;
 }
 
 .mode-badge.markdown {
-  background: #e8a020;
-  color: #fff;
+  background: var(--tool-todo);
+  color: var(--on-accent);
 }
 
 .mode-badge.richtext {
@@ -102,7 +95,7 @@ const renderedContent = computed(() => {
   padding: 5px 14px;
   border: 1px solid var(--gray-border);
   border-radius: 6px;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   background: var(--white);
   color: var(--text);
 }
@@ -111,15 +104,14 @@ const renderedContent = computed(() => {
   flex: 1;
   padding: 16px;
   overflow-y: auto;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.7;
   color: var(--text);
 }
 
-/* Markdown Styles */
-.content.markdown :deep(h1) { font-size: 24px; margin-bottom: 12px; }
-.content.markdown :deep(h2) { font-size: 20px; margin-bottom: 10px; }
-.content.markdown :deep(h3) { font-size: 16px; margin-bottom: 8px; }
+.content.markdown :deep(h1) { font-size: 1.5rem; margin-bottom: 12px; }
+.content.markdown :deep(h2) { font-size: 1.25rem; margin-bottom: 10px; }
+.content.markdown :deep(h3) { font-size: var(--fs-body); margin-bottom: 8px; }
 .content.markdown :deep(p)  { margin-bottom: 10px; }
 .content.markdown :deep(ul),
 .content.markdown :deep(ol) { padding-left: 20px; margin-bottom: 10px; }
@@ -128,7 +120,7 @@ const renderedContent = computed(() => {
   padding: 2px 6px;
   border-radius: 4px;
   font-family: 'Courier New', monospace;
-  font-size: 13px;
+  font-size: var(--fs-sm);
 }
 .content.markdown :deep(pre) {
   background: var(--gray-bg);

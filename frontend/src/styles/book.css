@@ -1,11 +1,13 @@
-/* Das Heft: Einband, Seiten, Bindung, Reiter. Die Module selbst bleiben unverändert
-   und werden hier über Variablen und gezielte Überschreibungen in die Seiten eingepasst. */
+/* The diary: cover, pages, binding and side tabs.
+   The tool modules keep their own scoped styles. This file fits them into the pages through
+   variables and a few targeted overrides, so colours and sizes stay defined in one place. */
 
 .book {
-  /* Akzentfarbe folgt dem aktiven Werkzeug */
+  /* The accent follows the active tool */
   --tool: var(--tool-notebook);
+  --tool-strong: var(--tool-notebook-hover);
   --blue: var(--tool);
-  --blue-dark: color-mix(in srgb, var(--tool) 78%, #000);
+  --blue-dark: var(--tool-strong);
   position: relative;
   display: flex;
   margin: 0 auto;
@@ -16,11 +18,17 @@
   box-shadow: 0 10px 24px rgb(0 0 0 / 0.22);
 }
 
-.book[data-tool='drawing'] { --tool: var(--tool-drawing); }
-.book[data-tool='todo']    { --tool: var(--tool-todo); }
-.book[data-tool='code']    { --tool: var(--tool-code); }
+.book[data-tool='drawing'] { --tool: var(--tool-drawing); --tool-strong: var(--tool-drawing-hover); }
+.book[data-tool='todo']    { --tool: var(--tool-todo);    --tool-strong: var(--tool-todo-hover); }
+.book[data-tool='code']    { --tool: var(--tool-code);    --tool-strong: var(--tool-code-hover); }
 
-/* Naht */
+/* Every control shows where the keyboard focus is */
+.layout :focus-visible {
+  outline: 2px solid var(--tool, var(--tool-notebook));
+  outline-offset: 2px;
+}
+
+/* Stitching */
 .book::before {
   content: '';
   position: absolute;
@@ -43,7 +51,7 @@
   border-radius: 6px;
 }
 
-/* Bindung */
+/* Binding */
 .spread::after {
   content: '';
   position: absolute;
@@ -58,7 +66,7 @@
   pointer-events: none;
 }
 
-/* Seitenstapel am rechten Rand */
+/* Page stack on the right edge, where the tabs are attached */
 .edge {
   position: absolute;
   right: 19px;
@@ -86,7 +94,7 @@
   pointer-events: none;
 }
 
-/* Seiten */
+/* Pages */
 .pg {
   display: flex;
   flex-direction: column;
@@ -108,14 +116,14 @@
 
 .pg-head h2 {
   font-family: var(--font-hand);
-  font-size: 32px;
+  font-size: 2.25rem;
   font-weight: 600;
   line-height: 1.1;
-  color: var(--text);
 }
 
 .pg-sub {
-  font-size: 12px;
+  display: block;
+  font-size: var(--fs-cap);
   color: var(--muted);
 }
 
@@ -126,15 +134,17 @@
   flex-direction: column;
 }
 
-.pg-body > * {
+/* Editors and previews fill the page; the skeleton and the empty state keep their own height */
+.pg-body > :not(.skeleton):not(.empty-state) {
   flex: 1;
   min-height: 0;
   height: auto;
 }
 
-.pg-loading { color: var(--muted); font-size: 14px; }
+.pg-note { color: var(--muted); }
 
-/* Reiter am Seitenrand: inaktiv nur das Symbol, aktiv mit Namen */
+/* Side tabs: an icon while inactive, the name while active.
+   The tooltip is a sibling of the button because the button clips its label with overflow: hidden. */
 .tabs {
   position: absolute;
   left: calc(100% - 28px);
@@ -144,9 +154,14 @@
   pointer-events: none;
 }
 
-.tab {
+.tab-slot {
   position: absolute;
   left: 0;
+  pointer-events: auto;
+}
+
+.tab {
+  position: relative;
   height: 40px;
   width: 56px;
   display: flex;
@@ -158,14 +173,14 @@
   border: 1px solid rgb(0 0 0 / 0.28);
   border-radius: 2px 10px 10px 2px;
   font-family: var(--font);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   cursor: pointer;
-  pointer-events: auto;
 }
 
+/* Glued edge of the marker */
 .tab::before {
   content: '';
   position: absolute;
@@ -176,20 +191,39 @@
   background: rgb(0 0 0 / 0.2);
 }
 
+.tab:hover { background: var(--tab-hover); }
 .tab svg { flex-shrink: 0; }
 .tab-label { display: none; }
-.tab.active,
-.tab:hover { width: auto; min-width: 56px; }
-.tab.active .tab-label,
-.tab:hover .tab-label { display: inline; }
-.tab:focus-visible { outline: 2px solid var(--stitch); outline-offset: 2px; }
+.tab.active { width: auto; min-width: 56px; }
+.tab.active .tab-label { display: inline; }
+
+.tip {
+  position: absolute;
+  right: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px 10px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--raised-border);
+  border-radius: 6px;
+  font-size: var(--fs-cap);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.2);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-slot:hover .tip,
+.tab-slot:focus-within .tip { opacity: 1; }
 
 .grip {
   position: absolute;
-  right: 4px;
-  bottom: 4px;
-  width: 22px;
-  height: 22px;
+  right: 3px;
+  bottom: 3px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -199,9 +233,74 @@
   z-index: 4;
 }
 
-/* ── Module in den Seiten ───────────────────────────────── */
+/* ── Narrow screens: one page at a time, tools in a bottom bar ── */
 
-/* Karten ohne eigenen Rahmen: die Seite ist die Karte */
+.layout.narrow .topbar-global { padding: 12px 12px 0; }
+
+.layout.narrow .stage {
+  display: flex;
+  padding: 12px;
+}
+
+.layout.narrow .book {
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  margin: 0;
+  padding: 12px;
+}
+
+.layout.narrow .book::before,
+.layout.narrow .ribbon,
+.layout.narrow .edge,
+.layout.narrow .spread::after { display: none; }
+
+.layout.narrow .spread {
+  grid-template-columns: 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+.layout.narrow .pg { padding: 14px 16px; overflow: auto; }
+
+.page-switch {
+  margin-bottom: 10px;
+  background: var(--gray-bg);
+  border-color: var(--stitch);
+}
+
+.layout.narrow .tabs {
+  position: static;
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  pointer-events: auto;
+}
+
+.layout.narrow .tab-slot {
+  position: static;
+  flex: 1;
+}
+
+/* Labels are shown here: there is room, and icons alone are easy to misread */
+.layout.narrow .tab {
+  width: 100%;
+  height: 56px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 0;
+  border-radius: 10px;
+  font-size: var(--fs-cap);
+}
+
+.layout.narrow .tab::before,
+.layout.narrow .tip { display: none; }
+.layout.narrow .tab-label { display: inline; }
+
+/* ── Modules inside the pages ── */
+
+/* Cards lose their frame: the page is the card */
 .book .pg-body .card {
   background: transparent;
   border: none;
@@ -215,25 +314,40 @@
   border-radius: 10px;
 }
 
+/* Module styles use --gray-border for both decoration and control outlines.
+   Controls need a 3:1 outline (WCAG 1.4.11), so they are switched to --field-border here. */
+.book .pg-body :is(
+  input, select, textarea, .item, .todo-item, .tool-btn, .fmt-btn,
+  .mode-switch, .btn-clear, .markdown-editor, .color-picker, .canvas-wrapper
+) {
+  border-color: var(--field-border);
+}
+
 .book .pg-body .toolbar { padding: 6px 0 10px; }
 .book .pg-body .title-input { margin: 8px 0; }
 
-/* Eintragstext in Handschrift auf Linien */
+.book .pg-body :is(select, .title-input, .new-input, .tool-btn, .btn-clear, .fmt-btn, .mode-btn) {
+  min-height: 2rem;
+}
+
+/* Entry text on ruled lines, capped at about 65 characters so it stays readable when the book is wide */
 .book .pg-body .editor,
 .book .pg-body .markdown-editor { margin: 0; }
 
 .book .pg-body .editor {
+  max-width: 65ch;
   padding: 0;
   border: none;
   border-radius: 0;
   background-color: transparent;
   background-image: repeating-linear-gradient(
-    transparent 0 23px, var(--gray-border) 23px 24px
+    transparent 0 calc(var(--lh-entry) - 1px),
+    var(--gray-border) calc(var(--lh-entry) - 1px) var(--lh-entry)
   );
   background-size: auto;
-  font-family: var(--font-hand);
-  font-size: 20px;
-  line-height: 24px;
+  font-family: var(--font-entry);
+  font-size: var(--fs-entry);
+  line-height: var(--lh-entry);
 }
 
 .book .pg-body .editor .tiptap {
@@ -241,36 +355,57 @@
   min-height: 100%;
 }
 
+/* The editable area has no outline of its own, so the ring goes around the whole writing field */
+.book .pg-body .editor:focus-within {
+  outline: 2px solid var(--tool);
+  outline-offset: 4px;
+}
+
 .book .pg-body .editor .tiptap ul,
 .book .pg-body .editor .tiptap ol { padding-left: 24px; }
 
 .book .pg-body .markdown-editor {
+  max-width: 80ch;
   border-radius: 8px;
   background: var(--white);
 }
 
-/* Zeichenfläche bleibt hell, damit Striche in beiden Modi sichtbar sind */
+/* The canvas stays light so strokes drawn in dark colours remain visible at night */
 .book .pg-body .canvas-wrapper {
   margin: 0;
-  background: #fffdf6;
+  background: #fffbf2;
   border-radius: 8px;
 }
 
 .book .pg-body .datum-row { padding: 6px 0 10px; }
 .book .pg-body .code-card .datum-row { padding: 10px 14px; }
-.book .pg-body .content { padding: 12px 0; }
 .book .pg-body .code-card .code-preview { border-radius: 0 0 10px 10px; }
 .book .pg-body .preview-body { padding: 8px 0; }
 
-/* Eingabefelder erben die Schrift nicht von selbst */
-.book input,
-.book select,
-.book textarea,
-.book button { font-family: var(--font); }
+.book .pg-body .content {
+  max-width: 65ch;
+  padding: 12px 0;
+}
 
-/* Rich-Text-Vorschau in Handschrift wie der Editor, Markdown bleibt in der Fließtextschrift */
+/* Rich text keeps the entry font, Markdown stays in the interface font */
 .book .pg-body .content:not(.markdown) {
-  font-family: var(--font-hand);
-  font-size: 20px;
-  line-height: 1.3;
+  font-family: var(--font-entry);
+  font-size: var(--fs-entry);
+  line-height: var(--lh-entry);
+}
+
+/* Native controls default to black text, which disappears on the dark pages.
+   :where() keeps this at zero specificity, so any component class can still set its own colour. */
+:where(.book input, .book select, .book textarea, .book button) {
+  font-family: var(--font);
+  color: var(--text);
+}
+
+.book .tool-btn.active { color: var(--on-accent); }
+
+.book .tool-btn { display: inline-flex; align-items: center; justify-content: center; }
+
+/* Touch devices have no hover, so the todo buttons must not hide behind it */
+@media (hover: none) {
+  .book .del-btn { opacity: 1; }
 }

@@ -17,7 +17,6 @@ async function addTodo() {
 
     <div class="card">
 
-      <!-- Neues Todo -->
       <div class="input-row">
         <input
           class="new-input"
@@ -28,7 +27,6 @@ async function addTodo() {
         <button class="add-btn" @click="addTodo">+</button>
       </div>
 
-      <!-- Offene Todos -->
       <div class="section">
         <div class="section-label">Open</div>
         <div class="todo-list">
@@ -61,7 +59,6 @@ async function addTodo() {
         </div>
       </div>
 
-      <!-- Erledigte Todos -->
       <div class="section">
         <div class="section-label">Done</div>
         <div class="todo-list">
@@ -117,7 +114,6 @@ async function addTodo() {
   gap: 16px;
 }
 
-/* Neues Todo */
 .input-row {
   display: flex;
   gap: 8px;
@@ -130,9 +126,8 @@ async function addTodo() {
   border-radius: var(--radius-btn);
   background: var(--white);
   font-family: var(--font);
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--text);
-  outline: none;
 }
 
 .new-input::placeholder { color: var(--muted); }
@@ -150,7 +145,6 @@ async function addTodo() {
 
 .add-btn:hover { background: var(--blue-dark); }
 
-/* Sektionen */
 .section {
   display: flex;
   flex-direction: column;
@@ -158,7 +152,7 @@ async function addTodo() {
 }
 
 .section-label {
-  font-size: 11px;
+  font-size: var(--fs-cap);
   font-weight: bold;
   color: var(--muted);
   text-transform: uppercase;
@@ -171,7 +165,6 @@ async function addTodo() {
   gap: 4px;
 }
 
-/* Todo Item */
 .todo-item {
   display: flex;
   align-items: center;
@@ -188,8 +181,8 @@ async function addTodo() {
 }
 
 .checkbox {
-  width: 16px;
-  height: 16px;
+  width: 1.25rem;
+  height: 1.25rem;
   cursor: pointer;
   accent-color: var(--blue);
   flex-shrink: 0;
@@ -200,18 +193,20 @@ async function addTodo() {
   border: none;
   background: transparent;
   font-family: var(--font);
-  font-size: 14px;
+  font-size: var(--fs-body);
   color: var(--text);
-  outline: none;
 }
 
 .del-btn {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--muted);
-  padding: 4px;
   border-radius: 6px;
   opacity: 0;
 }
@@ -219,12 +214,13 @@ async function addTodo() {
 .del-btn:hover { color: var(--text); background: var(--gray-card); }
 .del-btn:focus-visible { opacity: 1; outline: 2px solid var(--blue); }
 
-.todo-item:hover .del-btn {
+.todo-item:hover .del-btn,
+.todo-item:focus-within .del-btn {
   opacity: 1;
 }
 
 .empty {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--muted);
   padding: 8px 12px;
 }

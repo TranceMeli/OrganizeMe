@@ -3,12 +3,18 @@ import cors from 'cors'
 import { db, initDb } from './db.js'
 import { randomUUID } from 'crypto'
 
+// REST API for entries, drawings, todos and snippets. Every collection offers the same
+// GET / POST / PUT / DELETE routes, see the endpoint table in the README.
+
 const PORT = process.env.PORT || 3001
 const app = express()
+
+// The frontend runs on another port during development, so cross-origin requests must be allowed
 app.use(cors())
+
+// Drawings arrive as PNG data URLs, which exceed the default 100 kb body limit
 app.use(express.json({ limit: '10mb' }))
 
-// ───── Entries ─────
 app.get('/entries', (req, res) => {
   db.all('SELECT * FROM entries ORDER BY created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json(err)
@@ -50,7 +56,6 @@ app.delete('/entries/:id', (req, res) => {
   })
 })
 
-// ───── Drawings ─────
 app.get('/drawings', (req, res) => {
   db.all('SELECT * FROM drawings ORDER BY created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json(err)
@@ -92,7 +97,6 @@ app.delete('/drawings/:id', (req, res) => {
   })
 })
 
-// ───── Todos ─────
 app.get('/todos', (req, res) => {
   db.all('SELECT * FROM todos ORDER BY created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json(err)
@@ -134,7 +138,6 @@ app.delete('/todos/:id', (req, res) => {
   })
 })
 
-// ───── Snippets ─────
 app.get('/snippets', (req, res) => {
   db.all('SELECT * FROM snippets ORDER BY created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json(err)
@@ -176,14 +179,13 @@ app.delete('/snippets/:id', (req, res) => {
   })
 })
 
-// START
 initDb()
   .then(() => {
     app.listen(PORT, () => {
-      console.log('API läuft auf http://localhost:' + PORT)
+      console.log('API listening on http://localhost:' + PORT)
     })
   })
   .catch((err) => {
-    console.error('DB-Initialisierung fehlgeschlagen:', err)
+    console.error('Database initialisation failed:', err)
     process.exit(1)
   })

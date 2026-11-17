@@ -78,6 +78,7 @@ export const useEntryStore = defineStore('entry', {
       const e = this.activeEntry
       if (!e) return
       e.mode = mode
+      // HTML and Markdown cannot be converted into each other, so a mode switch starts with an empty entry
       e.content = mode === 'markdown' ? '' : '<p></p>'
       this._debouncedSave({ ...e })
     }

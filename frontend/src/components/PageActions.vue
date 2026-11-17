@@ -1,4 +1,6 @@
 <script setup>
+// "New" and delete buttons at the top of an editor page. `disabled` applies to delete only,
+// because creating the first item must work while nothing is selected.
 defineProps({
   disabled: Boolean
 })
@@ -35,7 +37,7 @@ defineEmits(['create', 'delete'])
 
 .btn-new,
 .icon-btn {
-  height: 30px;
+  height: var(--control-h);
   background: var(--blue);
   color: var(--on-accent);
   border: none;
@@ -46,12 +48,12 @@ defineEmits(['create', 'delete'])
 
 .btn-new {
   padding: 0 16px;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 600;
 }
 
 .icon-btn {
-  width: 32px;
+  width: var(--control-h);
   display: flex;
   align-items: center;
   justify-content: center;

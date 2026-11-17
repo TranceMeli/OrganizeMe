@@ -19,7 +19,7 @@ function onKeydown(e) {
     cancel()
     return
   }
-  // Fokus bleibt im Dialog
+  // Keep the focus inside the dialog while it is open
   if (e.key === 'Tab' && panelRef.value) {
     const focusable = panelRef.value.querySelectorAll('button:not([disabled])')
     if (!focusable.length) return
@@ -40,7 +40,7 @@ watch(() => dialog.open, async (isOpen) => {
     previouslyFocused = document.activeElement
     document.addEventListener('keydown', onKeydown)
     await nextTick()
-    // Fokus auf "Cancel", damit Enter nichts Unwiderrufliches auslöst
+    // Focus "Cancel" so that a stray Enter cannot delete anything
     panelRef.value?.querySelector('.btn-cancel')?.focus()
   } else {
     document.removeEventListener('keydown', onKeydown)
@@ -101,9 +101,9 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 .modal {
   width: min(420px, 100%);
   padding: 22px 24px 20px;
-  background: var(--gray-bg);
+  background: var(--raised);
   color: var(--text);
-  border: 1px solid var(--cover-edge);
+  border: 1px solid var(--raised-border);
   border-radius: 12px;
   box-shadow: 0 18px 40px rgb(0 0 0 / 0.35);
   font-family: var(--font);
@@ -118,7 +118,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 }
 
 .modal-message {
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.5;
   color: var(--muted);
   overflow-wrap: anywhere;
@@ -133,10 +133,10 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 
 .btn-cancel,
 .btn-confirm {
-  height: 34px;
-  padding: 0 16px;
+  height: var(--control-h);
+  padding: 0 18px;
   font-family: var(--font);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
@@ -156,7 +156,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
   border: 1px solid transparent;
 }
 
-.btn-confirm.danger { background: #A63D2F; color: #fff; }
+.btn-confirm.danger { background: var(--danger-fill); color: var(--on-danger); }
 .btn-confirm:hover { filter: brightness(1.08); }
 
 .btn-cancel:focus-visible,

@@ -37,7 +37,8 @@ const FontSize = Extension.create({
   }
 })
 
-// Verhindert, dass programmatisches setContent() als Benutzeränderung gespeichert wird
+// setContent() also triggers onUpdate. The flag keeps programmatic loads from being saved as if
+// the user had typed them.
 let syncing = false
 
 function setEditorContent(html) {
@@ -66,7 +67,7 @@ const editor = useEditor({
   }
 })
 
-// Markdown Textarea Inhalt
+// The textarea is not bound to the store directly so that typing never loses the caret position
 const markdownContent = ref(store.activeEntry?.content || '')
 
 watch(() => store.activeId, () => {
@@ -107,7 +108,6 @@ function switchMode(mode) {
 
       <div class="toolbar">
 
-        <!-- Modus-Wechsel -->
         <div class="mode-switch">
           <button
             class="mode-btn"
@@ -121,7 +121,6 @@ function switchMode(mode) {
           >Markdown</button>
         </div>
 
-        <!-- Rich Text Toolbar -->
         <template v-if="store.activeEntry?.mode !== 'markdown'">
           <select
             class="font-size-select"
@@ -134,18 +133,24 @@ function switchMode(mode) {
           <button
             class="fmt-btn"
             :class="{ active: editor?.isActive('bold') }"
+            :aria-pressed="!!editor?.isActive('bold')"
+            aria-label="Bold"
             @click="editor.chain().focus().toggleBold().run()"
           ><b>B</b></button>
 
           <button
             class="fmt-btn"
             :class="{ active: editor?.isActive('italic') }"
+            :aria-pressed="!!editor?.isActive('italic')"
+            aria-label="Italic"
             @click="editor.chain().focus().toggleItalic().run()"
           ><i>I</i></button>
 
           <button
             class="fmt-btn"
             :class="{ active: editor?.isActive('strike') }"
+            :aria-pressed="!!editor?.isActive('strike')"
+            aria-label="Strikethrough"
             @click="editor.chain().focus().toggleStrike().run()"
           ><s>S</s></button>
         </template>
@@ -159,14 +164,12 @@ function switchMode(mode) {
         @input="store.updateTitle($event.target.value)"
       />
 
-      <!-- Rich Text Editor -->
       <EditorContent
         v-if="store.activeEntry?.mode !== 'markdown'"
         :editor="editor"
         class="editor"
       />
 
-      <!-- Markdown Editor -->
       <textarea
         v-else
         class="markdown-editor"
@@ -205,7 +208,6 @@ function switchMode(mode) {
   flex-wrap: wrap;
 }
 
-/* Modus-Switch */
 .mode-switch {
   display: flex;
   border: 1px solid var(--gray-border);
@@ -219,7 +221,7 @@ function switchMode(mode) {
   border: none;
   background: var(--white);
   color: var(--muted);
-  font-size: 12px;
+  font-size: var(--fs-cap);
   cursor: pointer;
   font-family: var(--font);
 }
@@ -236,7 +238,7 @@ function switchMode(mode) {
   background: var(--white);
   color: var(--text);
   font-family: var(--font);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 
@@ -246,7 +248,7 @@ function switchMode(mode) {
   border-radius: var(--radius-sm);
   background: var(--white);
   color: var(--text);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 
@@ -261,12 +263,11 @@ function switchMode(mode) {
 .title-input {
   margin: 12px 14px 8px;
   padding: 7px 10px;
-  font-size: 15px;
+  font-size: var(--fs-body);
   border: 1px solid var(--gray-border);
   border-radius: 6px;
   background: var(--white);
   color: var(--text);
-  outline: none;
 }
 
 .title-input::placeholder { color: var(--muted); }
@@ -278,7 +279,7 @@ function switchMode(mode) {
   border: 1px solid var(--gray-border);
   border-radius: 6px;
   overflow-y: auto;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   line-height: 1.6;
   background-color: #fff;
   background-image:
@@ -297,7 +298,6 @@ function switchMode(mode) {
   color: var(--text);
 }
 
-/* Markdown Editor */
 .markdown-editor {
   flex: 1;
   margin: 0 14px 14px;
@@ -305,13 +305,12 @@ function switchMode(mode) {
   border: 1px solid var(--gray-border);
   border-radius: 6px;
   overflow-y: auto;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.6;
   font-family: 'Courier New', monospace;
   background: var(--white);
   color: var(--text);
   resize: none;
-  outline: none;
 }
 
 .markdown-editor::placeholder { color: var(--muted); }

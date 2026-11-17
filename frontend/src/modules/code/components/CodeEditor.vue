@@ -8,13 +8,23 @@ import { languages } from '../languages'
 const store = useCodeStore()
 const containerRef = ref(null)
 let editorInstance = null
-let syncing = false // verhindert Speichern beim Wechsel des Snippets
+// setValue() fires a change event. Without this flag, switching snippets would save the
+// code that was just loaded and send a pointless request.
+let syncing = false
+
+// vs-dark paints comments at 4.2:1, below the 4.5:1 the rest of the app meets
+monaco.editor.defineTheme('organizeme-dark', {
+  base: 'vs-dark',
+  inherit: true,
+  rules: [{ token: 'comment', foreground: '7FB069' }],
+  colors: {}
+})
 
 onMounted(() => {
   editorInstance = monaco.editor.create(containerRef.value, {
     value: store.activeSnippet?.code || '',
     language: store.activeSnippet?.language || 'javascript',
-    theme: 'vs-dark',
+    theme: 'organizeme-dark',
     fontSize: 14,
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
@@ -42,7 +52,7 @@ watch(() => store.activeId, () => {
   syncing = false
 })
 
-// Sprache folgt dem Store, egal ob per Auswahl oder per Bearbeiten-Dialog geändert
+// The highlighting follows the stored language, whichever control changed it
 watch(() => store.activeSnippet?.language, (lang) => {
   if (!editorInstance || !lang) return
   monaco.editor.setModelLanguage(editorInstance.getModel(), lang)
@@ -118,8 +128,7 @@ watch(() => store.activeSnippet?.language, (lang) => {
   background: var(--white);
   color: var(--text);
   font-family: var(--font);
-  font-size: 14px;
-  outline: none;
+  font-size: var(--fs-body);
 }
 
 .title-input::placeholder { color: var(--muted); }
@@ -131,7 +140,7 @@ watch(() => store.activeSnippet?.language, (lang) => {
   background: var(--white);
   color: var(--text);
   font-family: var(--font);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 

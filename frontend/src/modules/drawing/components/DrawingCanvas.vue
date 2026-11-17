@@ -18,6 +18,7 @@ const lineWidth = ref(4)
 onMounted(() => {
   ctx = canvasRef.value.getContext('2d')
 
+  // Assigning canvas.width or height clears the bitmap, so the saved image has to be drawn again
   resizeObserver = new ResizeObserver(() => {
     const canvas = canvasRef.value
     if (!canvas) return
@@ -83,6 +84,7 @@ function stopDrawing() {
   if (!drawing) return
   drawing = false
   ctx.closePath()
+  // The finished stroke is saved as a PNG; the store debounces the request
   const data = canvasRef.value.toDataURL('image/png')
   store.saveData(data)
 }
@@ -111,18 +113,18 @@ async function clearCanvas() {
     <div class="card">
       <div class="toolbar">
         <div class="tool-group">
-          <button class="tool-btn" :class="{ active: tool === 'pen' }" @click="tool = 'pen'" title="Pen">✏️</button>
-          <button class="tool-btn" :class="{ active: tool === 'eraser' }" @click="tool = 'eraser'" title="Eraser">🧹</button>
+          <button class="tool-btn" :class="{ active: tool === 'pen' }" :aria-pressed="tool === 'pen'" aria-label="Pen" @click="tool = 'pen'" title="Pen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16zM14 7l3 3" /></svg></button>
+          <button class="tool-btn" :class="{ active: tool === 'eraser' }" :aria-pressed="tool === 'eraser'" aria-label="Eraser" @click="tool = 'eraser'" title="Eraser"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 20h-10.5l-4.2-4.3a1 1 0 0 1 0-1.4l10-10a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4L9.1 20.2" /></svg></button>
         </div>
 
         <div class="tool-group">
           <label class="tool-label">Color</label>
-          <input type="color" v-model="color" class="color-picker" />
+          <input type="color" v-model="color" class="color-picker" aria-label="Color" />
         </div>
 
         <div class="tool-group">
           <label class="tool-label">Width</label>
-          <input type="range" v-model="lineWidth" min="1" max="30" class="range" />
+          <input type="range" v-model="lineWidth" min="1" max="30" class="range" aria-label="Width" />
           <span class="range-val">{{ lineWidth }}</span>
         </div>
 
@@ -181,7 +183,7 @@ async function clearCanvas() {
 .tool-group.right { margin-left: auto; }
 
 .tool-label {
-  font-size: 12px;
+  font-size: var(--fs-cap);
   color: var(--muted);
 }
 
@@ -191,7 +193,7 @@ async function clearCanvas() {
   border-radius: var(--radius-sm);
   background: var(--white);
   cursor: pointer;
-  font-size: 15px;
+  font-size: var(--fs-body);
 }
 
 .tool-btn.active {
@@ -211,7 +213,7 @@ async function clearCanvas() {
 .range { width: 80px; cursor: pointer; }
 
 .range-val {
-  font-size: 12px;
+  font-size: var(--fs-cap);
   color: var(--muted);
   width: 20px;
 }
@@ -221,7 +223,7 @@ async function clearCanvas() {
   background: var(--white);
   border: 1px solid var(--gray-border);
   border-radius: var(--radius-btn);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   cursor: pointer;
 }
 

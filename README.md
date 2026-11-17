@@ -7,125 +7,169 @@
 ![SQLite](https://img.shields.io/badge/SQLite-3-003b57?logo=sqlite&logoColor=white&style=for-the-badge&logoSize=auto)
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2020.19-5fa04e?logo=nodedotjs&logoColor=white&style=for-the-badge&logoSize=auto)
 
-A personal organizer as a local web app with four modules:
+OrganizeMe is a personal digital diary that runs on your own computer. Notes, drawings, todos, and code snippets live in one place, laid out as an open leather-bound book with one tab per tool. Everything is stored in a local SQLite file, with no account and no cloud.
 
-| Module | Description |
+**Status:** experimental personal project, in active development.
+
+![Notebook module in day mode](docs/screenshots/notebook.png)
+
+## Features
+
+- **Four tools, one tab each:** notebook, drawing, todos, and code snippets. The page color follows the active tool.
+- **Notebook:** write in rich text (TipTap) or Markdown. The right page shows a live preview.
+- **Drawing:** canvas with pen, eraser, color, and stroke width. Drawings are stored as PNG.
+- **Todos:** open and done lists with a progress bar.
+- **Code:** snippets in the Monaco editor with syntax highlighting for ten languages.
+- **Autosave with feedback:** a status next to each page title shows "Saving…", "Saved 7:47 PM", or "Couldn't save" with a retry button.
+- **Day and night mode**, and a choice between handwriting (Caveat) and an easy-read font for entries.
+- **Resizable book:** drag the bottom right corner. On screens narrower than 900 px it shows one page at a time.
+- **Keyboard shortcuts** for switching tools and creating items.
+- **Accessibility:** text meets WCAG AA contrast (4.5 : 1) in day and night mode, controls show a focus ring, and animations respect `prefers-reduced-motion`.
+
+| Notebook, night | Todos |
 |---|---|
-| **Notebook** | Entries as rich text (TipTap) or Markdown, with live preview |
-| **Drawing** | Canvas with pen, eraser, color, and stroke width |
-| **Todos** | Open and completed tasks with a progress indicator |
-| **Code** | Snippets with the Monaco editor and syntax highlighting (highlight.js) |
+| ![Notebook in night mode](docs/screenshots/notebook-dark.png) | ![Todos module](docs/screenshots/todos.png) |
 
-The app looks like a leather-bound diary: an open book with two pages, a ribbon bookmark, and one index tab per tool on the page edge. Drag the corner at the bottom right to resize the book (double-click it to fit the window). Colors follow the active tool, and there is a day/night mode. Headings and entries use the handwriting font Caveat, the rest uses Nunito. The book size, active tool, and mode are remembered in the browser. Deleting items asks for confirmation in an in-app dialog instead of a browser alert.
-
-## Screenshots
-
-| Notebook | Notebook (dark) |
+| Code | Narrow screen |
 |---|---|
-| ![Notebook](docs/screenshots/notebook.png) | ![Notebook in dark mode](docs/screenshots/notebook-dark.png) |
-
-| Drawing | Todos |
-|---|---|
-| ![Drawing](docs/screenshots/drawing.png) | ![Todos](docs/screenshots/todos.png) |
-
-| Code |
-|---|
-| ![Code](docs/screenshots/code.png) |
-
-## Project structure
-
-```
-Organizer/
-├── backend/     Express API with SQLite (entries.db)
-├── docs/        Screenshots for the README
-└── frontend/    Frontend (Vue 3, Vite, Pinia)
-    └── src/
-        ├── App.vue
-        ├── config.js          Backend API address
-        ├── components/        Shared components (ItemList)
-        ├── styles/            book.css – cover, pages, tabs, module overrides
-        ├── utils/             Shared helpers (debounce)
-        └── modules/
-            ├── entries/       Notebook – each module: components, services, stores
-            ├── drawing/       Drawing
-            ├── todo/          Todos
-            └── code/          Code snippets
-```
-
-Each module separates the UI (`components`), API access (`services`), and state (`stores`, Pinia). Changes are saved automatically (debounced per item).
+| ![Code module](docs/screenshots/code.png) | ![Narrow screen layout](docs/screenshots/narrow.png) |
 
 ## Requirements
 
-- Node.js `^20.19.0` or `>=22.12.0`
+- [Node.js](https://nodejs.org/) 20.19 or newer, or 22.12 or newer (required by Vite 8). Tested with Node 24.
+- npm, which comes with Node.js.
+
+No external services or API keys are needed.
 
 ## Installation
 
 ```bash
+git clone https://github.com/TranceMeli/OrganizeMe.git
+cd OrganizeMe
+
 cd backend
 npm install
-```
-
-```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
-## Running
+If the backend stops with `Could not locate the bindings file`, the native SQLite module was not built. Run `npm rebuild sqlite3` in `backend`. Recent npm versions block install scripts by default; `backend/package.json` already allows the one for `sqlite3`.
 
-Backend (default port **3001**):
+## Quick start
+
+Run the backend and the frontend in two terminals.
 
 ```bash
 cd backend
 npm start
 ```
 
-Frontend (development server, usually http://localhost:5173):
-
 ```bash
 cd frontend
 npm run dev
 ```
 
-Vite prints the exact address in the terminal.
+Open the address that Vite prints, usually <http://localhost:5173>. The backend listens on <http://localhost:3001>.
 
-### Changing the port
+On the first start the backend creates `backend/entries.db`. Click **New entry** to write your first page.
 
-The backend reads the environment variables `PORT` and `DB_PATH` (path of the SQLite file). The frontend's backend address is defined in `frontend/src/config.js` and can be overridden with `VITE_API_BASE`, for example in `frontend/.env.local`:
+## Usage
 
+### Keyboard shortcuts
+
+| Keys | Action |
+|---|---|
+| `Alt` + `1` to `4` | Switch to notebook, drawing, todos, or code |
+| `Alt` + `N` | Create a new item in the current tool (in Todos: jump to the new-todo field) |
+| `Esc` | Close the confirmation dialog |
+
+Ctrl shortcuts are not used because browsers reserve `Ctrl` + digits and `Ctrl` + `N`.
+
+### Talking to the API directly
+
+Every collection (`entries`, `drawings`, `todos`, `snippets`) supports `GET /<name>`, `POST /<name>`, `PUT /<name>/:id`, and `DELETE /<name>/:id`.
+
+```bash
+curl -X POST http://localhost:3001/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Water the plants"}'
 ```
+
+The response is the stored todo:
+
+```json
+{ "id": "…", "title": "Water the plants", "done": 0, "created_at": "2026-11-17 18:47:03" }
+```
+
+| Collection | Fields |
+|---|---|
+| `entries` | `title`, `content`, `mode` (`richtext` or `markdown`) |
+| `drawings` | `title`, `data` (PNG as a data URL) |
+| `todos` | `title`, `done` |
+| `snippets` | `title`, `code`, `language` |
+
+## Configuration
+
+All settings are optional.
+
+| Variable | Used by | Description | Default |
+|---|---|---|---|
+| `PORT` | backend | Port of the API | `3001` |
+| `DB_PATH` | backend | Location of the SQLite file | `backend/entries.db` |
+| `VITE_API_BASE` | frontend | Address of the API | `http://localhost:3001` |
+
+Set `VITE_API_BASE` in `frontend/.env.local` when the backend runs on another port:
+
+```bash
 VITE_API_BASE=http://localhost:4000
 ```
 
-## Production build
+The UI preferences (book size, active tool, day or night, entry font) are stored in your browser's local storage.
+
+## Development
 
 ```bash
 cd frontend
-npm run build
-npm run preview
+npm run build     # production build, also a quick check that everything compiles
+npm run preview   # serve the production build; the backend must be running
 ```
 
-The backend must keep running.
+The project has no automated tests and no linter yet. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to check a change by hand.
 
-## API
+### Project structure
 
-Every resource supports `GET /<name>`, `POST /<name>`, `PUT /<name>/:id`, and `DELETE /<name>/:id`.
+```
+OrganizeMe/
+├── backend/           Express API with SQLite
+├── docs/screenshots/  Images used in this README
+└── frontend/          Vue 3, Vite, Pinia
+    └── src/
+        ├── App.vue         Book layout, tabs, shortcuts, design tokens
+        ├── components/     Shared UI: dialog, save status, item list, empty state
+        ├── composables/    Save status and dialog state
+        ├── modules/        One folder per tool: components, services, stores
+        ├── styles/         book.css – cover, pages, tabs
+        └── utils/          API client, debounce, date formatting
+```
 
-| Resource | Fields |
-|---|---|
-| `/entries` | `title`, `content`, `mode` (`richtext` or `markdown`) |
-| `/drawings` | `title`, `data` (PNG as a data URL) |
-| `/todos` | `title`, `done` |
-| `/snippets` | `title`, `code`, `language` |
+### Backup
 
-## Data
+Stop the backend, then copy `backend/entries.db` together with `entries.db-wal` and `entries.db-shm` if they exist. The files are excluded from Git on purpose.
 
-By default, data is stored in `backend/entries.db` (SQLite, WAL mode), which `.gitignore` excludes from Git. The file is created on first start. To back it up, copy it together with `entries.db-wal` and `entries.db-shm` while the backend is stopped.
+## Known limitations
 
-## Customizing the look
+- Single user. The API has no authentication, so run it only on a machine you trust.
+- Markdown is rendered without sanitising, because only your own notes are shown. Add a sanitiser such as DOMPurify before exposing the app to other people.
+- Switching an entry between rich text and Markdown starts it empty, because the two formats cannot be converted into each other.
 
-Colors are CSS variables at the top of the style block in `frontend/src/App.vue` (`.layout` for day, `.layout.dark` for night): paper, leather cover, stitching, ribbon, and one color per tool (`--tool-notebook`, `--tool-drawing`, `--tool-todo`, `--tool-code`). `--on-accent` is the text color on accent-colored surfaces. The book itself is styled in `frontend/src/styles/book.css`. Fonts come from `@fontsource/caveat` and `@fontsource/nunito` and are imported in `frontend/src/main.js`, so they work offline.
+## Contributing
 
-## Notes
+Bug reports and ideas are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
-- The app is intended for local use. The API has no authentication.
-- Markdown content is rendered unfiltered.
+## Help and support
+
+Open an [issue](https://github.com/TranceMeli/OrganizeMe/issues) for questions, bugs, and feature requests.
+
+## License
+
+No license has been chosen yet, so all rights are reserved by default. Please open an issue before reusing the code.

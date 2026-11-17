@@ -1,18 +1,9 @@
 <script setup>
 import { useDrawingStore } from '../stores/drawingStore'
 import ItemList from '../../../components/ItemList.vue'
+import { formatLongDate } from '@/utils/date'
 
 const store = useDrawingStore()
-
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    weekday: 'long',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
 </script>
 
 <template>
@@ -27,7 +18,7 @@ function formatDate(dateStr) {
     <div class="card">
       <div class="datum-row">
         <div class="datum">
-          {{ formatDate(store.activeDrawing?.created_at) }}
+          {{ formatLongDate(store.activeDrawing?.created_at) }}
         </div>
       </div>
 
@@ -74,7 +65,7 @@ function formatDate(dateStr) {
   padding: 5px 14px;
   border: 1px solid var(--gray-border);
   border-radius: 6px;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   background: var(--white);
   color: var(--text);
 }
@@ -96,6 +87,6 @@ function formatDate(dateStr) {
 
 .empty {
   color: var(--muted);
-  font-size: 14px;
+  font-size: var(--fs-sm);
 }
 </style>

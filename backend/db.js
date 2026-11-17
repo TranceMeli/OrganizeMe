@@ -1,7 +1,8 @@
 import sqlite3 from 'sqlite3'
 import { fileURLToPath } from 'node:url'
 
-// DB-Pfad: DB_PATH oder entries.db neben dieser Datei, unabhängig vom Startverzeichnis
+// DB_PATH overrides the location, e.g. for demo data. The default sits next to this file,
+// so the database is found no matter which directory the server is started from.
 export const db = new sqlite3.Database(
   process.env.DB_PATH || fileURLToPath(new URL('./entries.db', import.meta.url))
 )
@@ -19,9 +20,9 @@ export function initDb() {
         )
       `, (err) => { if (err) reject(err) })
 
-      // Migration für bestehende DB
+      // Databases created before Markdown support have no mode column
       db.run(`ALTER TABLE entries ADD COLUMN mode TEXT DEFAULT 'richtext'`,
-        () => {} // Fehler ignorieren falls Spalte schon existiert
+        () => {} // SQLite has no ADD COLUMN IF NOT EXISTS; the error just means the column is there
       )
 
       db.run(`
@@ -58,4 +59,5 @@ export function initDb() {
   })
 }
 
+// Write-ahead logging lets reads continue while a write is in progress
 db.run('PRAGMA journal_mode = WAL')

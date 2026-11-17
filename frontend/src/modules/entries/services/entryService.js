@@ -1,33 +1,8 @@
-import { API_BASE } from '@/config'
+import { resource } from '@/utils/api'
 
-const API = `${API_BASE}/entries`
+const entries = resource('entries')
 
-export async function getEntries() {
-  const res = await fetch(API)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return await res.json()
-}
-
-export async function createEntry(entry) {
-  const res = await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry)
-  })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return await res.json()
-}
-
-export async function updateEntry(entry) {
-  const res = await fetch(`${API}/${entry.id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry)
-  })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-}
-
-export async function deleteEntry(id) {
-  const res = await fetch(`${API}/${id}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-}
+export const getEntries = entries.list
+export const createEntry = entries.create
+export const updateEntry = entries.update
+export const deleteEntry = entries.remove

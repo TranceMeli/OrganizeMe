@@ -2,6 +2,7 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useCodeStore } from '../stores/codeStore'
 import PageActions from '../../../components/PageActions.vue'
+import '../monacoEnvironment'
 import * as monaco from 'monaco-editor'
 import { languages } from '../languages'
 
@@ -73,6 +74,7 @@ watch(() => store.activeSnippet?.language, (lang) => {
       <div class="toolbar">
         <input
           class="title-input"
+          aria-label="Snippet title"
           placeholder="Title..."
           :value="store.activeSnippet?.title"
           @input="store.updateTitle($event.target.value)"
@@ -80,6 +82,7 @@ watch(() => store.activeSnippet?.language, (lang) => {
 
         <select
           class="lang-select"
+          aria-label="Language"
           :value="store.activeSnippet?.language"
           @change="store.updateLanguage($event.target.value)"
         >

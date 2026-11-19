@@ -24,7 +24,7 @@ OrganizeMe is a personal digital diary that runs on your own computer. Notes, dr
 - **Day and night mode**, and a choice between handwriting (Caveat) and an easy-read font for entries.
 - **Resizable book:** drag the bottom right corner. On screens narrower than 900 px it shows one page at a time.
 - **Keyboard shortcuts** for switching tools and creating items.
-- **Accessibility:** text meets WCAG AA contrast (4.5 : 1) in day and night mode, controls show a focus ring, and animations respect `prefers-reduced-motion`.
+- **Accessibility:** text meets WCAG AA contrast (4.5 : 1) in day and night mode, controls show a focus ring and have names for screen readers, and animations respect `prefers-reduced-motion`. An automatic axe scan is part of the test suite.
 
 | Notebook, night | Todos |
 |---|---|
@@ -134,7 +134,17 @@ npm run build     # production build, also a quick check that everything compile
 npm run preview   # serve the production build; the backend must be running
 ```
 
-The project has no automated tests and no linter yet. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to check a change by hand.
+### Tests
+
+```bash
+cd backend && npm test                          # API and server tests
+cd frontend && npm test                         # unit and component tests
+cd frontend && npm run test:e2e                 # browser tests in Chromium
+cd frontend && npm run test:e2e:production      # smoke tests against the built app
+cd frontend && npm run test:e2e:browsers        # core browser tests in Firefox and WebKit
+```
+
+[tests.md](tests.md) explains what is covered, how to set up the browsers, and shows screenshots of the tested states. A GitHub Actions workflow in `.github/workflows/tests.yml` runs everything on each push.
 
 ### Project structure
 

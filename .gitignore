@@ -31,3 +31,10 @@ Thumbs.db
 *.sw?
 .eslintcache
 *.tsbuildinfo
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+playwright-report-production/
+dist-production/

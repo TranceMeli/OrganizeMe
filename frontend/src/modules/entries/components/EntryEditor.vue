@@ -50,6 +50,8 @@ function setEditorContent(html) {
 
 const editor = useEditor({
   extensions: [StarterKit, TextStyle, FontSize],
+  // The editable area is a plain div, so assistive technology needs to be told it is a text box
+  editorProps: { attributes: { role: 'textbox', 'aria-multiline': 'true', 'aria-label': 'Entry text' } },
   content: store.activeEntry?.content || '<p></p>',
   onUpdate({ editor }) {
     const entry = store.activeEntry
@@ -124,6 +126,7 @@ function switchMode(mode) {
         <template v-if="store.activeEntry?.mode !== 'markdown'">
           <select
             class="font-size-select"
+            aria-label="Font size"
             @change="editor.chain().focus().setFontSize($event.target.value).run()"
           >
             <option value="" disabled selected>Size</option>
@@ -159,6 +162,7 @@ function switchMode(mode) {
 
       <input
         class="title-input"
+        aria-label="Entry title"
         placeholder="Title..."
         :value="store.activeEntry?.title"
         @input="store.updateTitle($event.target.value)"
@@ -173,6 +177,7 @@ function switchMode(mode) {
       <textarea
         v-else
         class="markdown-editor"
+        aria-label="Markdown text"
         :value="markdownContent"
         @input="onMarkdownInput"
         placeholder="# Write Markdown..."

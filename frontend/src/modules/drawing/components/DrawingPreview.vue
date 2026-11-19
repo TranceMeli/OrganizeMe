@@ -22,7 +22,7 @@ const store = useDrawingStore()
         </div>
       </div>
 
-      <div class="preview-body">
+      <div class="preview-body" tabindex="0" role="region" aria-label="Drawing preview">
         <img
           v-if="store.activeDrawing?.data"
           :src="store.activeDrawing.data"

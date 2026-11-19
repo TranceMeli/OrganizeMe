@@ -12,14 +12,21 @@ Follow [Installation](README.md#installation) and [Quick start](README.md#quick-
 
 ## Checking a change
 
-There are no automated tests yet, so please check by hand:
+Run the automated tests, see [tests.md](tests.md) for details:
 
-1. `cd frontend && npm run build` succeeds.
-2. Open every tool (notebook, drawing, todos, code) in day and night mode and look for errors in the browser console.
-3. Create, change, and delete an item in each tool, then reload and confirm the change was saved.
-4. If you touched colors or text sizes, check that text keeps a contrast of at least 4.5 : 1 and that nothing is smaller than 12 px.
-5. Operate the changed part with the keyboard only. Every control must show a focus ring.
-6. Use a separate database while testing so your own notes stay untouched. In `backend`, run `DB_PATH=./test.db npm start` (PowerShell: `$env:DB_PATH='./test.db'; npm start`).
+1. `cd backend && npm test`
+2. `cd frontend && npm test`
+3. `cd frontend && npm run test:e2e`
+4. `cd frontend && npm run test:e2e:production`
+5. `cd frontend && npm run build`
+
+Add or update a test with every change in behavior. A few things the tests cannot judge, so please also look at them yourself:
+
+- Open every tool in day and night mode and check that the page looks right.
+- Operate the changed part with the keyboard only.
+- If you touched colors, the contrast tests tell you when a rule is broken; look at the result anyway.
+
+The end-to-end tests use their own database. When you try the app by hand, use a separate one so your own notes stay untouched: in `backend`, run `DB_PATH=./test.db npm start` (PowerShell: `$env:DB_PATH='./test.db'; npm start`).
 
 ## Code style
 

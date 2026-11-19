@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { dialog, closeDialog } from '../composables/useDialog'
 
 defineProps({
@@ -8,6 +8,16 @@ defineProps({
 
 const panelRef = ref(null)
 let previouslyFocused = null
+
+// Safari and Firefox on macOS do not focus a button when it is clicked, so document.activeElement
+// would be <body> and the focus could not return to the button that opened the dialog.
+// The last pressed control is remembered as a fallback.
+let lastPressed = null
+const CONTROLS = 'button, a[href], input, select, textarea, [tabindex]'
+
+function rememberPressed(event) {
+  lastPressed = event.target.closest?.(CONTROLS) ?? null
+}
 
 function cancel() {
   closeDialog(false)
@@ -37,7 +47,8 @@ function onKeydown(e) {
 
 watch(() => dialog.open, async (isOpen) => {
   if (isOpen) {
-    previouslyFocused = document.activeElement
+    const active = document.activeElement
+    previouslyFocused = active && active !== document.body ? active : lastPressed
     document.addEventListener('keydown', onKeydown)
     await nextTick()
     // Focus "Cancel" so that a stray Enter cannot delete anything
@@ -49,7 +60,12 @@ watch(() => dialog.open, async (isOpen) => {
   }
 })
 
-onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
+onMounted(() => document.addEventListener('pointerdown', rememberPressed, true))
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointerdown', rememberPressed, true)
+})
 </script>
 
 <template>

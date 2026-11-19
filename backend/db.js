@@ -3,11 +3,20 @@ import { fileURLToPath } from 'node:url'
 
 // DB_PATH overrides the location, e.g. for demo data. The default sits next to this file,
 // so the database is found no matter which directory the server is started from.
-export const db = new sqlite3.Database(
-  process.env.DB_PATH || fileURLToPath(new URL('./entries.db', import.meta.url))
-)
+const location = process.env.DB_PATH || fileURLToPath(new URL('./entries.db', import.meta.url))
 
-export function initDb() {
+// With a callback, sqlite3 reports a failed open here. Without one it throws an uncaught error
+// event, which would crash the process with a stack trace before initDb() can report it.
+let reportOpen
+const opened = new Promise((resolve, reject) => {
+  reportOpen = (err) => (err ? reject(err) : resolve())
+})
+opened.catch(() => {}) // initDb() handles the failure; this only prevents an unhandled rejection
+
+export const db = new sqlite3.Database(location, reportOpen)
+
+export async function initDb() {
+  await opened
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.run(`
@@ -60,4 +69,4 @@ export function initDb() {
 }
 
 // Write-ahead logging lets reads continue while a write is in progress
-db.run('PRAGMA journal_mode = WAL')
+db.run('PRAGMA journal_mode = WAL', () => {}) // a failed open is reported by initDb()

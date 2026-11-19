@@ -1,4 +1,6 @@
 <script setup>
+// The element is always rendered, even while idle, because screen readers only announce
+// changes in a live region that already exists. Every state has an icon and words, never colour alone.
 import { computed } from 'vue'
 import { saveStatus, retryFailed, dismissFailed } from '@/composables/useSaveStatus'
 
@@ -8,7 +10,6 @@ const time = computed(() =>
 </script>
 
 <template>
-  <!-- Always rendered so screen readers announce changes; every state has an icon and words, never colour alone -->
   <div class="save" :data-state="saveStatus.state" role="status" aria-live="polite">
     <template v-if="saveStatus.state === 'saving'">
       <svg class="spin" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor"

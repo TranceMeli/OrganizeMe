@@ -20,6 +20,7 @@ async function addTodo() {
       <div class="input-row">
         <input
           class="new-input"
+          aria-label="New todo"
           placeholder="New todo..."
           v-model="newTitle"
           @keydown.enter="addTodo"
@@ -38,11 +39,13 @@ async function addTodo() {
             <input
               type="checkbox"
               class="checkbox"
+              :aria-label="`Done: ${todo.title}`"
               :checked="todo.done"
               @change="store.toggleDone(todo.id)"
             />
             <input
               class="todo-title"
+              aria-label="Todo title"
               :value="todo.title"
               @change="store.updateTitle(todo.id, $event.target.value)"
             />
@@ -70,11 +73,13 @@ async function addTodo() {
             <input
               type="checkbox"
               class="checkbox"
+              :aria-label="`Done: ${todo.title}`"
               :checked="todo.done"
               @change="store.toggleDone(todo.id)"
             />
             <input
               class="todo-title"
+              aria-label="Todo title"
               :value="todo.title"
               @change="store.updateTitle(todo.id, $event.target.value)"
             />
